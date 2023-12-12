@@ -1,5 +1,5 @@
-#Scapy
-Install Scapy
-Create Ping Packet
-Send Packet
+-Scapy
+-Install Scapy
+-Create Ping Packet
+-Send Packet
 
