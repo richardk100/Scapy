@@ -1,0 +1,152 @@
+┌──(root㉿kali)-[/home/kali]
+└─# pip install scapy
+Requirement already satisfied: scapy in /usr/lib/python3/dist-packages (2.5.0)
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+                                                                             
+┌──(root㉿kali)-[/home/kali]
+└─# scapy
+INFO: Can't import PyX. Won't be able to use psdump() or pdfdump().
+                                      
+                     aSPY//YASa       
+             apyyyyCY//////////YCa       |
+            sY//////YSpcs  scpCY//Pp     | Welcome to Scapy
+ ayp ayyyyyyySCP//Pp           syY//C    | Version 2.5.0
+ AYAsAYYYYYYYY///Ps              cY//S   |
+         pCCCCY//p          cSSps y//Y   | https://github.com/secdev/scapy
+         SPPPP///a          pP///AC//Y   |
+              A//A            cyP////C   | Have fun!
+              p///Ac            sC///a   |
+              P////YCpc           A//A   | Craft packets like I craft my beer.
+       scccccp///pSP///p          p//Y   |               -- Jean De Clerck
+      sY/////////y  caa           S//P   |
+       cayCyayP//Ya              pY/Ya
+        sY/PsY////YCc          aC//Yp 
+         sc  sccaCY//PCypaapyCP//YSs  
+                  spCPY//////YPSps    
+                       ccaacs         
+                                       using IPython 8.14.0
+>>> ip_packet_test=IP()
+>>> Is(IP)
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[2], line 1
+----> 1 Is(IP)
+
+NameError: name 'Is' is not defined
+>>> ls(IP)
+version    : BitField  (4 bits)                  = ('4')
+ihl        : BitField  (4 bits)                  = ('None')
+tos        : XByteField                          = ('0')
+len        : ShortField                          = ('None')
+id         : ShortField                          = ('1')
+flags      : FlagsField                          = ('<Flag 0 ()>')
+frag       : BitField  (13 bits)                 = ('0')
+ttl        : ByteField                           = ('64')
+proto      : ByteEnumField                       = ('0')
+chksum     : XShortField                         = ('None')
+src        : SourceIPField                       = ('None')
+dst        : DestIPField                         = ('None')
+options    : PacketListField                     = ('[]')
+>>> ip_packet_test.show()
+###[ IP ]### 
+  version   = 4
+  ihl       = None
+  tos       = 0x0
+  len       = None
+  id        = 1
+  flags     = 
+  frag      = 0
+  ttl       = 64
+  proto     = hopopt
+  chksum    = None
+  src       = 127.0.0.1
+  dst       = 127.0.0.1
+  \options   \
+
+>>> ip_packet_test.dst='8.8.8.8'
+>>> ip_packet_test.show()
+###[ IP ]### 
+  version   = 4
+  ihl       = None
+  tos       = 0x0
+  len       = None
+  id        = 1
+  flags     = 
+  frag      = 0
+  ttl       = 64
+  proto     = hopopt
+  chksum    = None
+  src       = 192.168.231.128
+  dst       = 8.8.8.8
+  \options   \
+
+>>> ip_packet_test.summary()
+'192.168.231.128 > 8.8.8.8 hopopt'
+>>> ls(ICMP)
+type       : ByteEnumField                       = ('8')
+code       : MultiEnumField (Depends on 8)       = ('0')
+chksum     : XShortField                         = ('None')
+id         : XShortField (Cond)                  = ('0')
+seq        : XShortField (Cond)                  = ('0')
+ts_ori     : ICMPTimeStampField (Cond)           = ('14019153')
+ts_rx      : ICMPTimeStampField (Cond)           = ('14019153')
+ts_tx      : ICMPTimeStampField (Cond)           = ('14019153')
+gw         : IPField (Cond)                      = ("'0.0.0.0'")
+ptr        : ByteField (Cond)                    = ('0')
+reserved   : ByteField (Cond)                    = ('0')
+length     : ByteField (Cond)                    = ('0')
+addr_mask  : IPField (Cond)                      = ("'0.0.0.0'")
+nexthopmtu : ShortField (Cond)                   = ('0')
+unused     : MultipleTypeField (ShortField, IntField, StrFixedLenField) = ("b''")
+>>> icmp_packet_test=ICMP()
+>>> icmp_packet_test.show()
+###[ ICMP ]### 
+  type      = echo-request
+  code      = 0
+  chksum    = None
+  id        = 0x0
+  seq       = 0x0
+  unused    = ''
+
+>>> icmp_packet_test.summary()
+'ICMP echo-request 0'
+>>> packet_to_be_sent=ip_packet_test/icmp_packet_test
+>>> packet_to_be_sent.summary()
+'IP / ICMP 192.168.231.128 > 8.8.8.8 echo-request 0'
+>>> data=Raw()
+>>> data.load='data_test'
+>>> final_packet=packet_to_be_sent/data
+>>> final_packet.show()
+###[ IP ]### 
+  version   = 4
+  ihl       = None
+  tos       = 0x0
+  len       = None
+  id        = 1
+  flags     = 
+  frag      = 0
+  ttl       = 64
+  proto     = icmp
+  chksum    = None
+  src       = 192.168.231.128
+  dst       = 8.8.8.8
+  \options   \
+###[ ICMP ]### 
+     type      = echo-request
+     code      = 0
+     chksum    = None
+     id        = 0x0
+     seq       = 0x0
+     unused    = ''
+###[ Raw ]### 
+        load      = 'data_test'
+
+>>> final_packet.summary()
+'IP / ICMP 192.168.231.128 > 8.8.8.8 echo-request 0 / Raw'
+>>> sr1(final_packet)
+Begin emission:
+Finished sending 1 packets.
+.*
+Received 2 packets, got 1 answers, remaining 0 packets
+<IP  version=4 ihl=5 tos=0x0 len=37 id=6617 flags= frag=0 ttl=128 proto=icmp chksum=0x68c6 src=8.8.8.8 dst=192.168.231.128 |<ICMP  type=echo-reply code=0 chksum=0xee54 id=0x0 seq=0x0 unused='' |<Raw  load='data_test' |<Padding  load='\x00\x00\x00\x00\x00\x00\x00\x00\x00' |>>>>                               
+>>> ip_packet_test=IP()
